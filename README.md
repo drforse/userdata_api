@@ -3,8 +3,8 @@ db.sqlite3 and config.ini, should be found on host, config.ini template is in re
 ### api configuration (config.ini)
 it should probably look like this:
 ```
-[DEFAULT]
-db_path = sqlite:///db.sqlite3
+[default]
+db_address = sqlite:///db.sqlite3
 
 [userdata_api]
 creds_directory = /.userdata_api/shadow/
