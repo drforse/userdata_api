@@ -1,0 +1,28 @@
+version: '3'
+services:
+  photos_api:
+    build:
+      context: .
+      dockerfile: photos_api.dockerfile
+    ports:
+      - "7771:7771"
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./config.ini:/app/config.ini
+      - photos_api_creds:/.photos_api/shadow/
+      - photos:/app/photos
+  userdata_api:
+    build:
+      context: .
+      dockerfile: userdata_api.dockerfile
+    ports:
+      - "7772:7772"
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./config.ini:/app/config.ini
+      - userdata_api_creds:/.userdata_api/shadow/
+      - photos:/app/photos
+volumes:
+  userdata_api_creds: {}
+  photos_api_creds: {}
+  photos: {}

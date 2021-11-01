@@ -1,0 +1,9 @@
+*.ini
+env
+venv
+.git
+.gitignore
+README.md
+*.sqlite3
+migrations
+photos
