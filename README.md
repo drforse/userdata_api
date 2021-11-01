@@ -1,5 +1,5 @@
 ### bind mounts
-db.sqlite3 and config.ini, should be found on host
+db.sqlite3 and config.ini, should be found on host, config.ini template is in resources dir
 ### api configuration (config.ini)
 it should probably look like this:
 ```
