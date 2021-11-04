@@ -1,4 +1,5 @@
 import sys
+import multiprocessing
 
 from loguru import logger
 from sanic import Sanic
@@ -25,7 +26,7 @@ def main():
             abort(401)
 
     logger.remove()
-    logger.add(sys.stderr, level="DEBUG", enqueue=True)
+    logger.add(sys.stderr, level="DEBUG" if config.DEBUG else "INFO", enqueue=True)
 
     api = Api(app)
     api.add_resource(UsersResource, "/api/users", methods=["POST"])
@@ -35,6 +36,10 @@ def main():
     Base.metadata.create_all(engine)
 
     try:
-        app.run(config.HOST, config.PORT, debug=True, auto_reload=False)
+        app.run(
+            config.HOST, config.PORT,
+            debug=config.DEBUG, auto_reload=False,
+            workers=1 if config.DEBUG else multiprocessing.cpu_count()
+        )
     except (KeyboardInterrupt, SystemExit) as e:
         logger.info("Good Bye!")

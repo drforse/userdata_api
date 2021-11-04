@@ -20,6 +20,8 @@ PHOTOS_API_LISTEN_HOST=0.0.0.0
 PHOTOS_API_LISTEN_PORT=7771 # same port for outside container and for inside container
 PHOTOS_API_PUBLIC_URL_BASE=http://127.0.0.1
 PHOTOS_API_CREDS_DIR=/.photos_api/shadow/
+
+DEBUG=0
 ```
 
 ### additional required steps

@@ -15,3 +15,4 @@ def _getenv(key: str, type_: type = str):
 HOST = _getenv("PHOTOS_API_LISTEN_HOST")
 PORT = _getenv("PHOTOS_API_LISTEN_PORT", int)
 CREDS_PATH = Path(_getenv("PHOTOS_API_CREDS_DIR")) / "creds.bin"
+DEBUG = bool(_getenv("DEBUG", int))

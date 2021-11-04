@@ -20,3 +20,4 @@ PHOTOS_PATH_BASE = Path.cwd() / "photos"
 CREDS_PATH = Path(_getenv("USERDATA_API_CREDS_DIR")) / "creds.bin"
 DB_ADDRESS = _getenv("DB_ADDRESS")
 SA_URL = sa_url.make_url(DB_ADDRESS)
+DEBUG = bool(_getenv("DEBUG", int))
