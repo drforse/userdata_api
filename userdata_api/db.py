@@ -5,11 +5,14 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session as SessionTypeHint
+from sqlalchemy_utils import create_database, database_exists
 
 from . import config
 
+if not database_exists(config.SA_URL):
+    create_database(config.SA_URL)
 
-engine = create_engine(config.DB_ADDRESS)
+engine = create_engine(config.SA_URL)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 

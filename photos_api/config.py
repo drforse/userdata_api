@@ -1,9 +1,17 @@
-import configparser
+import os
 from pathlib import Path
 
-config = configparser.ConfigParser()
-config.read(Path.cwd() / "config.ini", encoding="utf-8")
+from dotenv import load_dotenv, dotenv_values
 
-HOST = config.get("photos_api", "host")
-PORT = config.getint("photos_api", "port")
-CREDS_PATH = Path(config.get("photos_api", "creds_directory")) / "creds.bin"
+load_dotenv()
+default_env = dotenv_values(".env.default")
+
+
+def _getenv(key: str, type_: type = str):
+    env = os.environ.get(key) or default_env[key]
+    return type_(env)
+
+
+HOST = _getenv("PHOTOS_API_LISTEN_HOST")
+PORT = _getenv("PHOTOS_API_LISTEN_PORT", int)
+CREDS_PATH = Path(_getenv("PHOTOS_API_CREDS_DIR")) / "creds.bin"

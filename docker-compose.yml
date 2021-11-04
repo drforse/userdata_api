@@ -4,25 +4,69 @@ services:
     build:
       context: .
       dockerfile: photos_api.dockerfile
+    image: drforse/userdata_photos_api
     ports:
-      - "7771:7771"
+      - ${PHOTOS_API_LISTEN_PORT:-7771}:${PHOTOS_API_LISTEN_PORT:-7771}
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./config.ini:/app/config.ini
-      - photos_api_creds:/.photos_api/shadow/
+      - photos_api_creds:${PHOTOS_API_CREDS_DIR:-/.photos_api/shadow/}
       - photos:/app/photos
+    environment:
+      PHOTOS_API_LISTEN_HOST: ${PHOTOS_API_LISTEN_HOST}
+      PHOTOS_API_LISTEN_PORT: ${PHOTOS_API_LISTEN_PORT:-7771}
+      PHOTOS_API_CREDS_DIR: ${PHOTOS_API_CREDS_DIR:-/.photos_api/shadow/}
+    depends_on:
+      nginx:
+        condition: service_healthy
   userdata_api:
     build:
       context: .
       dockerfile: userdata_api.dockerfile
+    image: drforse/userdata_api
     ports:
-      - "7772:7772"
+      - ${USERDATA_API_LISTEN_PORT:-7772}:${USERDATA_API_LISTEN_PORT:-7772}
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./config.ini:/app/config.ini
-      - userdata_api_creds:/.userdata_api/shadow/
+      - userdata_api_creds:${PHOTOS_API_CREDS_DIR:-/.userdata_api/shadow/}
       - photos:/app/photos
+    environment:
+      DB_ADDRESS: ${DB_ADDRESS}
+      USERDATA_API_LISTEN_HOST: ${USERDATA_API_LISTEN_HOST}
+      USERDATA_API_LISTEN_PORT: ${USERDATA_API_LISTEN_PORT:-7772}
+      USERDATA_API_CREDS_DIR: ${USERDATA_API_CREDS_DIR:-/.userdata_api/shadow/}
+      PHOTOS_API_PUBLIC_URL_BASE: ${PHOTOS_API_PUBLIC_URL_BASE}
+    depends_on:
+      nginx:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.0
+    volumes:
+      - userdata_db_data:/var/lib/mysql
+    ports:
+      - ${MYSQL_PORT:-7770}:${MYSQL_PORT:-7770}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-N0pAssw0rd}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-userdata_db}
+      MYSQL_USER: ${MYSQL_USER:-userdata_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-UsErdAtAPaSSW0RD}
+      MYSQL_TCP_PORT: ${MYSQL_PORT:-7770}
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "--port", "7770",
+             "-u", "${MYSQL_USER:-userdata_user}",
+             "--password=${MYSQL_PASSWORD:-UsErdAtAuSeR}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx_mod.dockerfile
+    ports:
+      - 80:80
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
 volumes:
   userdata_api_creds: {}
   photos_api_creds: {}
   photos: {}
+  userdata_db_data: {}

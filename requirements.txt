@@ -1,5 +1,6 @@
 aiofiles==0.7.0
 alchemy-mock==0.4.3
+alembic==1.7.4
 aniso8601==9.0.1
 anyio==3.3.4
 async-generator==1.10
@@ -17,12 +18,16 @@ httpx==0.18.2
 idna==3.3
 iniconfig==1.1.1
 loguru==0.5.3
+Mako==1.1.5
+MarkupSafe==2.0.1
 multidict==5.2.0
 packaging==21.2
 pluggy==1.0.0
 py==1.10.0
 pydantic==1.8.2
+PyMySQL==1.0.2
 pyparsing==2.4.7
+python-dotenv==0.19.1
 pytz==2021.3
 rfc3986==1.5.0
 sanic==21.9.1
@@ -31,6 +36,7 @@ sanic-routing==0.7.1
 six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.26
+SQLAlchemy-Utils==0.37.9
 toml==0.10.2
 typing-extensions==3.10.0.2
 websockets==10.0

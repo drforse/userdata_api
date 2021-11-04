@@ -22,10 +22,10 @@ class User(MixinSerializers, Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String)
-    email_address = Column(String, unique=True)
-    photo_path = Column(String, unique=True)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255))
+    email_address = Column(String(256), unique=True)
+    photo_path = Column(String(50), unique=True)
 
     user_pass = relationship("UserPass", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
@@ -38,8 +38,8 @@ class UserPass(MixinSerializers, Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    number = Column(String, nullable=False)
-    country = Column(String, nullable=False)
+    number = Column(String(9), nullable=False)
+    country = Column(String(100), nullable=False)
     issue_date = Column(Date, nullable=False)
     expiration_date = Column(Date, nullable=False)
 

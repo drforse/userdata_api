@@ -1,58 +1,39 @@
-### bind mounts
-db.sqlite3 and config.ini, should be found on host, config.ini template is in resources dir
 ### api configuration (config.ini)
-it should probably look like this:
+not used anymore
+### api configuration (.env)
+apps can work without this file, as there are default values in .env.default (that is copied inside image) and docker-compose.yml (for build-time required vars), but I highly recommend to configure mysql :)
+IF YOU WILL CONFIGURE .env.default OR/AND docker-compose.yml, BE AWARE OF DEFAULT ENV VARS, SOME ARE DUPLICATED IN THERE FILES, AND SHOULD BE THE SAME (USERDATA_API_LISTEN_PORT, USERDATA_API_CREDS_DIR, PHOTOS_API_LISTEN_PORT, PHOTOS_API_CREDS_DIR)
+example (the default values are shown here):
 ```
-[default]
-db_address = sqlite:///db.sqlite3
+DB_ADDRESS=mysql+pymysql://userdata_user:UsErdAtAPaSSW0RD@db:7770/userdata_db
+MYSQL_ROOT_PASSWORD=N0pAssw0rd
+MYSQL_DATABASE=userdata_db
+MYSQL_USER=userdata_user
+MYSQL_PASSWORD=UsErdAtAPaSSW0RD
+MYSQL_PORT=7770  # same port for outside container and for inside container
 
-[userdata_api]
-creds_directory = /.userdata_api/shadow/
-host = 0.0.0.0
-port = 7772
-public_url_base = https://{ip_addr or domain}
+USERDATA_API_LISTEN_HOST=0.0.0.0
+USERDATA_API_LISTEN_PORT=7772  # same port for outside container and for inside container
+USERDATA_API_CREDS_DIR=/.userdata_api/shadow/
 
-[photos_api]
-creds_directory = /.photos_api/shadow/
-host = 0.0.0.0
-port = 7771
-public_url_base = https://{ip_addr or domain}
+PHOTOS_API_LISTEN_HOST=0.0.0.0
+PHOTOS_API_LISTEN_PORT=7771 # same port for outside container and for inside container
+PHOTOS_API_PUBLIC_URL_BASE=http://127.0.0.1
+PHOTOS_API_CREDS_DIR=/.photos_api/shadow/
 ```
 
-### nginx configuration
-```
-server {
-        listen 443 ssl;
-        server_name valid_server_name (ip_addr or domain);
-
-        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-        ssl_certificate /path/to/crt;
-        ssl_certificate_key /path/to/key;
-
-        # userdata api
-        location /api/ {
-               proxy_pass         http://127.0.0.1:7772/api/;
-               proxy_redirect     off;
-               proxy_set_header   Host $host;
-               proxy_set_header   X-Real-IP $remote_addr;
-               proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-               proxy_set_header   X-Forwarded-Host $server_name;
-       }
-
-        # photos
-        location /photos/ {
-                proxy_pass         http://127.0.0.1:7771/photos/;
-                proxy_redirect     off;
-                proxy_set_header   Host $host;
-                proxy_set_header   X-Real-IP $remote_addr;
-                proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header   X-Forwarded-Host $server_name;
-        }
-}
-```
 ### additional required steps
 don't forget to run `docker exec <container> python generate_userdata_api_key.py` for userdata_api container and `docker exec <container> python generate_photos_api_key.py` for photos_api container, this steps are required for generating unique api keys for apis
 the first key is for /api/users/ requests, the seconds one is for /photos/ requests
+well, it isn't actually required, but you won't be able of using apis without keys
+#### moving from first version to second
+in first version, SQLAlchemy models didn't support mysql, so in second version, if you want to stay on sqlite, you will need to create table in your sqlite db:
+```
+CREATE TABLE IF NOT EXISTS alembic_version (
+	version_num VARCHAR(32) PRIMARY KEY
+);
+INSERT INTO alembic_version (version_num) VALUES ('6313e1cb41c9');
+```
 
 ## Methods docs
 All methods take api_key in query args

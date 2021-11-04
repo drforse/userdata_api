@@ -1,13 +1,14 @@
+from os import getenv
 from pathlib import Path
 from uuid import uuid4
 import hashlib
-import configparser
 
-config = configparser.ConfigParser()
-config.read(Path.cwd() / "config.ini", encoding="utf-8")
+from dotenv import dotenv_values, load_dotenv
 
+load_dotenv()
+default_env = dotenv_values(".env.default")
 
-creds_directory = Path(config.get("userdata_api", "creds_directory"))
+creds_directory = Path(getenv("USERDATA_API_CREDS_DIR") or default_env["USERDATA_API_CREDS_DIR"])
 if creds_directory.exists() is False:
     creds_directory.mkdir()
 
