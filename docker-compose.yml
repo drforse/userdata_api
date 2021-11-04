@@ -14,9 +14,6 @@ services:
       PHOTOS_API_LISTEN_HOST: ${PHOTOS_API_LISTEN_HOST}
       PHOTOS_API_LISTEN_PORT: ${PHOTOS_API_LISTEN_PORT:-7771}
       PHOTOS_API_CREDS_DIR: ${PHOTOS_API_CREDS_DIR:-/.photos_api/shadow/}
-    depends_on:
-      nginx:
-        condition: service_healthy
   userdata_api:
     build:
       context: .
@@ -34,8 +31,6 @@ services:
       USERDATA_API_CREDS_DIR: ${USERDATA_API_CREDS_DIR:-/.userdata_api/shadow/}
       PHOTOS_API_PUBLIC_URL_BASE: ${PHOTOS_API_PUBLIC_URL_BASE}
     depends_on:
-      nginx:
-        condition: service_healthy
       db:
         condition: service_healthy
   db:
@@ -63,8 +58,9 @@ services:
       dockerfile: nginx_mod.dockerfile
     ports:
       - 80:80
-    healthcheck:
-      test: ["CMD", "service", "nginx", "status"]
+    depends_on:
+      - userdata_api
+      - photos_api
 volumes:
   userdata_api_creds: {}
   photos_api_creds: {}
