@@ -37,6 +37,11 @@ CREATE TABLE IF NOT EXISTS alembic_version (
 INSERT INTO alembic_version (version_num) VALUES ('6313e1cb41c9');
 ```
 
+### install and launch
+if you didn't read steps above, please read them and only then continue to here
+get the docker-compose.prod.yml in any place
+run docker-compose up -f docker-compose.prod.yml -d
+
 ## Methods docs
 All methods take api_key in query args
 
